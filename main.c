@@ -27,13 +27,6 @@ double dot(point const *a, point const *b) {
 
 double mag(point const *p) { return sqrt((p->x * p->x) + (p->y * p->y)); }
 
-point copy(point const *p) {
-  point q;
-  q.x = p->x;
-  q.y = p->y;
-  return q;
-}
-
 void normalize(point *p) {
   double m = mag(p);
   assert(m != INFINITY);
@@ -60,8 +53,6 @@ void scalarProjection(point const *p, point const *a, point const *b,
 
   ab.x += a->x;
   ab.y += a->y;
-
-  // printf("ab (%f, %f)\n", ab.x, ab.y);
 
   *destination = ab;
 }
@@ -99,7 +90,6 @@ void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
 
   double d;
   int furthestIdx = furthestPoint(original, sidx, eidx, &d);
-  printf("Distance between furthest is %f\n", d);
   if (furthestIdx != -1) {
     if (d < epsilon) {
       return;
@@ -146,36 +136,6 @@ curve rdp(curve const *start, double epsilon) {
 void rdp_result_free(curve *c) { free(c->points); }
 
 int main(int argc, char const *argv[]) {
-
-  // curve c;
-  // c.points = malloc(sizeof(point) * 5);
-
-  // c.length = 5;
-  // c.points[0].x = 0;
-  // c.points[0].y = 0;
-
-  // c.points[1].x = 0.25;
-  // c.points[1].y = 4;
-
-  // c.points[2].x = 0.5;
-  // c.points[2].y = 2;
-
-  // c.points[3].x = 0.75;
-  // c.points[3].y = 1;
-
-  // c.points[4].x = 1;
-  // c.points[4].y = 1;
-
-  // curve r = rdp(&c, 0.5);
-
-  // for (int i = 0; i < r.length; i++) {
-  //   printf("(%f, %f)\n", r.points[i].x, r.points[i].y);
-  // }
-
-  // rdp_result_free(&r);
-
-  point p;
-
   double epsilon = 0.075;
   if (argc == 2) {
     printf("%s\n", argv[1]);
@@ -194,6 +154,8 @@ int main(int argc, char const *argv[]) {
     c.length++;
     index++;
   }
+
+  printf("start has length of %d\n", c.length);
 
   curve r = rdp(&c, epsilon);
 
