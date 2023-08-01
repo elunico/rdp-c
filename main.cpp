@@ -4,56 +4,95 @@
 #include <tuple>
 #include <vector>
 
+double radians(double deg) { return deg * (M_PI / 180); }
+
+double degrees(double rad) { return rad * (180 / M_PI); }
+
 struct point {
   double x, y;
 
   point(double x, double y) : x(x), y(y) {}
+
   point() : x(0), y(0) {}
 
-  double dist(point const &other) const {
+  static point fromangle(double rads) {
+    double x = cos(rads);
+    double y = sin(rads);
+    return point{x, y};
+  }
+
+  static point fromangle(double rads, double magnitude) {
+    return point::fromangle(rads) * magnitude;
+  }
+
+  [[nodiscard]] point copy() const { return point{x, y}; }
+
+  [[nodiscard]] double dist(point const &other) const {
     double dx = x - other.x;
     double dy = y - other.y;
 
     return std::sqrt((dx * dx) + (dy * dy));
   }
 
-  double dot(point const &b) const {
-    double result = x * b.x + y * b.y;
-    return result;
-  }
+  [[nodiscard]] double dot(point const &b) const { return x * b.x + y * b.y; }
 
-  double mag() const { return std::sqrt((x * x) + (y * y)); }
+  [[nodiscard]] double mag() const { return std::sqrt(dot(*this)); }
+
+  [[nodiscard]] double heading() const {
+    point c = copy();
+    c.normalize();
+    return atan2(c.y, c.x);
+  }
 
   void normalize() {
     double m = mag();
     assert(m != INFINITY);
-    assert(m != 0);
+    if (m == 0)
+      return;
     x = x / m;
     y = y / m;
   }
 
-  point scalarProjection(point const &a, point const &b) const {
-    point ap, ab;
+  point operator/(double rhs) const {
+    auto p = copy();
+    p.x /= rhs;
+    p.y /= rhs;
+    return p;
+  }
 
-    ap.x = x - a.x;
-    ap.y = y - a.y;
+  point operator*(double rhs) const {
+    auto p = copy();
+    p.x *= rhs;
+    p.y *= rhs;
+    return p;
+  }
 
-    ab.x = b.x - a.x;
-    ab.y = b.y - a.y;
+  point operator-(point const &other) const {
+    point r;
+    r.x = x - other.x;
+    r.y = y - other.y;
+    return r;
+  }
+
+  point operator+(point const &other) const {
+    point r;
+    r.x = x + other.x;
+    r.y = y + other.y;
+    return r;
+  }
+
+  [[nodiscard]] point scalarProjection(point const &a, point const &b) const {
+    point ap = *this - a;
+    point ab = b - a;
 
     ab.normalize();
 
     double sp = ap.dot(ab);
-    ab.x *= sp;
-    ab.y *= sp;
 
-    ab.x += a.x;
-    ab.y += a.y;
-
-    return ab;
+    return (ab * sp) + a;
   }
 
-  double p2ldist(point const &l1, point const &l2) const {
+  [[nodiscard]] double p2ldist(point const &l1, point const &l2) const {
     point norm = scalarProjection(l1, l2);
     return dist(norm);
   }
@@ -61,13 +100,16 @@ struct point {
 
 struct curve {
 
-  std::vector<point const> const &points() const noexcept { return points_; }
+  [[nodiscard]] std::vector<point> const &points() const noexcept {
+    return points_;
+  }
 
-  int length() const { return points_.size(); }
+  [[nodiscard]] std::size_t length() const { return points_.size(); }
 
   void addPoint(point const &p) { points_.push_back(p); }
 
-  std::tuple<int, double> furthestPoint(int start, int end) const {
+  [[nodiscard]] std::tuple<int, double> furthestPoint(int start,
+                                                      int end) const {
 
     int furthestIndex = -1;
     double recordDist = 0;
@@ -85,7 +127,6 @@ struct curve {
   }
 
   curve rdp(double epsilon) {
-
     curve result;
 
     result.addPoint(points_.front());
@@ -96,7 +137,7 @@ struct curve {
   }
 
 private:
-  std::vector<point const> points_;
+  std::vector<point> points_;
 
   void rdp_support(double epsilon, int sidx, int eidx, curve &result) {
 
@@ -132,9 +173,10 @@ int main(int argc, char const *argv[]) {
 
   curve c;
 
-  int index = 0;
-  for (double d = 0; d < 5; d += 0.01) {
+  double d = 0;
+  while (d < 5) {
     c.addPoint(point{d, exp(-d * cos(2 * M_PI * d))});
+    d += 5;
   }
 
   std::cout << "Beginning " << c.points().front() << " and "

@@ -13,6 +13,25 @@ typedef struct {
   point *points;
 } curve;
 
+point fromangle(double rads) {
+  point p;
+  p.x = cos(rads);
+  p.y = sin(rads);
+  return p;
+}
+
+point mult(point const *p, double rhs) {
+  point r;
+  r.x = p->x * rhs;
+  r.y = p->y * rhs;
+  return r;
+}
+
+point fromangleandmag(double rads, double mag) {
+  point p = fromangle(rads);
+  return mult(&p, mag);
+}
+
 double dist(point const *a, point const *b) {
   double dx = a->x - b->x;
   double dy = a->y - b->y;
