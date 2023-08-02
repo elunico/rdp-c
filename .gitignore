@@ -1,2 +1,5 @@
 a.out*
 .vscode/
+*.dSYM
+rdp-c
+rdp-cpp
