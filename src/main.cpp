@@ -64,5 +64,8 @@ int main(int argc, char const *argv[]) {
   std::cout << "Point p is at " << p << " with heading " << degrees(p.heading())
             << std::endl;
 
+  c.ttydraw();
+  r.ttydraw();
+
   return 0;
 }
