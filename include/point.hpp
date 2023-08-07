@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <vector>
 
-template <std::floating_point T> struct point {
+template <std::floating_point T = double> struct point {
   T x, y;
 
   point(T x, T y) noexcept : x(x), y(y) {}
