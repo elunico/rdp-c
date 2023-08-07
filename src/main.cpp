@@ -17,6 +17,16 @@ std::ostream &operator<<(std::ostream &right, point<T> const &left) {
   return right;
 }
 
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &os, curve<T> const &left) {
+  os << "curve{";
+  for (const auto &p : left.points()) {
+    os << p << ", ";
+  }
+  os << "}";
+  return os;
+}
+
 int main(int argc, char const *argv[]) {
   std::cout << "C++" << std::endl;
 
@@ -26,12 +36,14 @@ int main(int argc, char const *argv[]) {
     epsilon = atof(argv[1]);
   }
 
-  curve<long double> c;
+  curve c;
 
-  long double d = 0;
+  double d = 0;
+
   while (d < 5) {
-    c.addPoint(point<long double>(d, exp(-d * cos(2 * M_PI * d))));
-    d += 5;
+    c.addPoint(point{d, exp(-d) * cos(2 * M_PI * d)});
+    // c.addPoint(point{d, exp(-d * cos(2 * M_PI * d))});
+    d += 0.01;
   }
 
   std::cout << "Beginning " << c.points().front() << " and "
@@ -47,7 +59,7 @@ int main(int argc, char const *argv[]) {
   std::cout << "After RDP " << r.points().front() << " and "
             << r.points().back() << std::endl;
 
-  auto p = point<long double>::fromangle(radians(45));
+  auto p = point<>::fromangle(radians(45));
 
   std::cout << "Point p is at " << p << " with heading " << degrees(p.heading())
             << std::endl;
