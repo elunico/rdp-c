@@ -39,7 +39,7 @@ int main(int argc, char const *argv[]) {
 
   curve c;
 
-  for (double x = 0; x < 5; x += 0.01) {
+  for (double x = -5; x < 5; x += 0.01) {
     c.addPoint(point{x, exp(-x) * cos(2 * M_PI * x)});
     // c.addPoint(point{x, exp(-x * cos(2 * M_PI * x))});
   }
@@ -57,18 +57,7 @@ int main(int argc, char const *argv[]) {
   std::cout << "After RDP " << r.points().front() << " and "
             << r.points().back() << std::endl;
 
-  curve_print printer(true, true, false, true);
-  // printer.print(c);
-  // printer.print(r);
-
-  // curve t = curve<double>::line_between(4, 4, 8, -4);
-  // printer.print(t);
-
-  curve q = curve<double>::quadratic(-2, -6, -3, -250, 250);
-  auto ff = q.rdp(0.1);
-  printer.print(ff);
-  std::cout << q.points().size() << '\n';
-  std::cout << ff.points().size() << '\n';
-
+  curve_print printer(false, false, false, false);
+  printer.print(c);
   return 0;
 }

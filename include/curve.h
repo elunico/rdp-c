@@ -1,6 +1,7 @@
 #ifndef CURVE_H
 #define CURVE_H
 
+#include "math.h"
 #include "point.h"
 
 typedef struct {
@@ -16,5 +17,14 @@ void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
 curve rdp(curve const *start, double epsilon);
 
 void rdp_result_free(curve *c);
+
+curve *curve_from_line(double x1, double y1, double x2, double y2,
+                       double delta);
+
+curve *curve_from_quadratic(double a, double b, double c, double xstart,
+                            double xend, double delta);
+
+void curve_quadratic_free(curve *c);
+void curve_linear_free(curve *c);
 
 #endif

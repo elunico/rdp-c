@@ -1,5 +1,6 @@
 #include "curve.h"
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int furthestPoint(curve const *inCurve, int start, int end, double *distance) {
@@ -23,9 +24,8 @@ int furthestPoint(curve const *inCurve, int start, int end, double *distance) {
 void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
                  int *included, int *totalPoints) {
 
-  if (sidx >= eidx) {
+  if (sidx >= eidx)
     return;
-  }
 
   double d;
   int furthestIdx = furthestPoint(original, sidx, eidx, &d);
@@ -73,3 +73,65 @@ curve rdp(curve const *start, double epsilon) {
 }
 
 void rdp_result_free(curve *c) { free(c->points); }
+
+void curve_quadratic_free(curve *c) {
+  free(c->points);
+  free(c);
+}
+void curve_linear_free(curve *c) {
+  free(c->points);
+  free(c);
+}
+
+static double quadratic(double a, double b, double c, double x) {
+  return a * pow(x, 2) + b * c + c;
+}
+
+curve *curve_from_quadratic(double a, double b, double c, double xstart,
+                            double xend, double delta) {
+  curve *result = malloc(sizeof(*result));
+  int count = ((int)((xend - xstart) / delta)) + 1;
+  printf("count is %d\n", count);
+  result->points = malloc(sizeof(point) * count);
+  result->length = count;
+  int index = 0;
+  for (double x = xstart; x <= xend; x += delta) {
+    result->points[index].x = x;
+    result->points[index++].y = quadratic(a, b, c, x);
+  }
+  return result;
+}
+
+static double linear_eq(double x1, double y1, double slope, double x) {
+  return slope * x - slope * x1 + y1;
+}
+
+curve *curve_from_line(double x1, double y1, double x2, double y2,
+                       double delta) {
+  double slope = (y2 - y1) / (x2 - x1);
+  curve *result = malloc(sizeof(*result));
+  int count = (int)((fabs(y1 - y2) / delta) + 1);
+  result->points = malloc(sizeof(point) * count);
+  result->length = count;
+  int index = 0;
+  if (isinf(slope)) {
+    if (y2 < y1) {
+      for (double start = y1; start > y2; start -= delta) {
+        result->points[index].x = x1;
+        result->points[index++].y = start;
+      }
+    } else {
+      for (double start = y1; start <= y2; start += delta) {
+        result->points[index].x = x1;
+        result->points[index++].y = start;
+      }
+    }
+  } else {
+    for (double start = x1; start < x2; start += delta) {
+      double y = linear_eq(x1, y1, slope, start);
+      result->points[index].x = start;
+      result->points[index++].y = y;
+    }
+  }
+  return result;
+}

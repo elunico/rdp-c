@@ -17,11 +17,13 @@ int main(int argc, char const *argv[]) {
 
   curve c;
 
-  c.points = malloc(sizeof(point) * 501);
+  const int pcount = 1000;
+
+  c.points = malloc(sizeof(point) * (pcount + 1));
   c.length = 0;
 
   int index = 0;
-  for (double d = 0; d < 5; d += 0.01) {
+  for (double d = -5; d < 5; d += 0.01) {
     c.points[index].x = d;
     c.points[index].y = exp(-d) * cos(2 * M_PI * d);
     c.length++;
@@ -37,6 +39,9 @@ int main(int argc, char const *argv[]) {
   print(&c);
 
   rdp_result_free(&r);
+
+  curve *q = curve_from_quadratic(1, 6, 5, -4, 4, 0.01);
+  print(q);
 
   free(c.points);
   return 0;

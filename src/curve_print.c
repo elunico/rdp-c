@@ -1,6 +1,7 @@
 
 #include "curve_print.h"
 
+// adapted from processing/p5.js
 double map(double n, double start1, double stop1, double start2, double stop2) {
   double delta = stop1 - start1 == 0 ? 1 : stop1 - start1;
   double newval = (n - start1) / (delta) * (stop2 - start2) + start2;
@@ -10,13 +11,13 @@ double map(double n, double start1, double stop1, double start2, double stop2) {
 void get_term_size(int *h, int *w) {
   char *ctermheight = getenv("LINES");
   if (ctermheight == NULL || *ctermheight == 0) {
-    fprintf(stderr, "environment does not contain LINES");
+    fprintf(stderr, "environment does not contain LINES\n");
     abort();
   }
 
   char *ctermwidth = getenv("COLUMNS");
   if (ctermwidth == NULL || *ctermwidth == 0) {
-    fprintf(stderr, "environment does not contain COLUMNS");
+    fprintf(stderr, "environment does not contain COLUMNS\n");
     abort();
   }
 
@@ -27,33 +28,37 @@ void get_term_size(int *h, int *w) {
   *w = termwidth;
 }
 
-struct curve_extrema get_curve_extrema(curve const *c) {
-  if (c->length == 0) {
-    struct curve_extrema retval = {.valid = 0};
-    return retval;
+bool get_curve_extrema(curve const *c, struct curve_extrema *result) {
+  if (result == NULL) {
+    fprintf(stderr, "Do not pass null to get_curve_extrema\n");
+    abort();
   }
+
+  if (c->length == 0)
+    return false;
 
   point *points = c->points;
 
   double xmin, xmax, ymin, ymax;
   for (int i = 1; i < c->length; i++) {
-    if (c->points[i].x > xmax) {
+    if (c->points[i].x > xmax)
       xmax = c->points[i].x;
-    }
-    if (c->points[i].x < xmin) {
+
+    if (c->points[i].x < xmin)
       xmin = c->points[i].x;
-    }
-    if (c->points[i].y > ymax) {
+
+    if (c->points[i].y > ymax)
       ymax = c->points[i].y;
-    }
-    if (c->points[i].y < ymin) {
+
+    if (c->points[i].y < ymin)
       ymin = c->points[i].y;
-    }
   }
 
-  struct curve_extrema retval = {
-      .valid = 1, .xmin = xmin, .ymin = ymin, .xmax = xmax, .ymax = ymax};
-  return retval;
+  result->xmax = xmax;
+  result->xmin = xmin;
+  result->ymax = ymax;
+  result->ymin = ymin;
+  return true;
 }
 
 void fix_bounds(double *min, double *max, bool sym, bool start0) {
@@ -80,8 +85,9 @@ void print(curve const *c) {
 
   point *points_ = c->points;
 
-  struct curve_extrema e = get_curve_extrema(c);
-  if (!e.valid) {
+  struct curve_extrema e;
+
+  if (!get_curve_extrema(c, &e)) {
     fprintf(stderr, "No points in curve\n");
     return;
   }
