@@ -23,7 +23,9 @@ int main(int argc, char const *argv[]) {
   c.length = 0;
 
   int index = 0;
-  for (double d = -5; d < 5; d += 0.01) {
+  double start = -5;
+  double end = 5;
+  for (double d = -start; d < end; d += ((end - start) / pcount)) {
     c.points[index].x = d;
     c.points[index].y = exp(-d) * cos(2 * M_PI * d);
     c.length++;
@@ -36,12 +38,17 @@ int main(int argc, char const *argv[]) {
 
   printf("epsilon=%f. result has %d points\n", epsilon, r.length);
 
-  print(&c);
+  print(&c, NULL);
 
   rdp_result_free(&r);
 
-  curve *q = curve_from_quadratic(1, 6, 5, -4, 4, 0.01);
-  print(q);
+  curve *q = curve_from_quadratic(5, 6, 5, -4, 4, 0.01);
+  struct curve_print_properties props;
+  props.start_x_0 = true;
+  props.start_y_0 = true;
+  props.symmetricX = true;
+  props.symmetricY = true;
+  print(q, &props);
 
   free(c.points);
   return 0;

@@ -73,7 +73,14 @@ void fix_bounds(double *min, double *max, bool sym, bool start0) {
   }
 }
 
-void print(curve const *c) {
+void print(curve const *c, struct curve_print_properties *prop) {
+  bool x0 = false, y0 = false, xsym = false, ysym = false;
+  if (prop != NULL) {
+    x0 = prop->start_x_0;
+    y0 = prop->start_y_0;
+    xsym = prop->symmetricX;
+    ysym = prop->symmetricY;
+  }
   int theight, twidth;
   get_term_size(&theight, &twidth);
 
@@ -92,8 +99,8 @@ void print(curve const *c) {
     return;
   }
 
-  fix_bounds(&e.xmin, &e.xmax, false, false); // symmetricX, start_x_0_);
-  fix_bounds(&e.ymin, &e.ymax, false, false); // symmetricY, start_y_0_);
+  fix_bounds(&e.xmin, &e.xmax, xsym, x0); // symmetricX, start_x_0_);
+  fix_bounds(&e.ymin, &e.ymax, ysym, y0); // symmetricY, start_y_0_);
 
   for (int i = 0; i < c->length; i++) {
     point const *p = &c->points[i];
