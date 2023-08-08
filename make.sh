@@ -27,7 +27,7 @@ fi
 # build c version
 
 echo "Compiling C Version"
-cc -o build/rdp-c -Iinclude/ $DEBUG_FLAG src/*.c
+cc -std=gnu11 -o build/rdp-c -Iinclude/ $DEBUG_FLAG src/*.c
 
 # build c++ version
 

@@ -1,7 +1,9 @@
 #include "curve.h"
+#include "curve_print.h"
 #include "point.h"
 #include <assert.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +33,8 @@ int main(int argc, char const *argv[]) {
   curve r = rdp(&c, epsilon);
 
   printf("epsilon=%f. result has %d points\n", epsilon, r.length);
+
+  print(&c);
 
   rdp_result_free(&r);
 
