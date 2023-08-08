@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
   int index = 0;
   for (double d = 0; d < 5; d += 0.01) {
     c.points[index].x = d;
-    c.points[index].y = exp(-d * cos(2 * M_PI * d));
+    c.points[index].y = exp(-d) * cos(2 * M_PI * d);
     c.length++;
     index++;
   }
