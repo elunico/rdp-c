@@ -1,3 +1,5 @@
+#ifndef CURVE_H
+#define CURVE_H
 
 #include "point.h"
 
@@ -14,3 +16,5 @@ void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
 curve rdp(curve const *start, double epsilon);
 
 void rdp_result_free(curve *c);
+
+#endif

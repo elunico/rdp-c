@@ -2,33 +2,44 @@
 #define CURVE_HPP
 
 #include "point.hpp"
-#include <algorithm>
-#include <cstdlib>
-#include <exception>
-#include <iostream>
 #include <tuple>
 #include <type_traits>
 #include <vector>
 
-// adapted from processing/p5.js
-template <std::floating_point T = double>
-T map(T n, T start1, T stop1, T start2, T stop2) {
-  T newval = (n - start1) / (stop1 - start1) * (stop2 - start2) + start2;
-  return newval;
-}
-
-template <typename T>
-std::ostream &operator<<(std::ostream &os, std::vector<T> const &left) {
-  os << "[";
-  for (int i = 0; i < left.size() - 1; i++) {
-    os << left[i] << ", ";
-  }
-  os << left.back();
-  os << "}";
-  return os;
-}
-
 template <std::floating_point T = double> struct curve {
+
+  static curve<T> quadratic(T a, T b, T c, T xstart, T xend, T delta = 0.01) {
+    auto equation = [&](T x) { return a * std::pow(x, 2) + b * x + c; };
+    curve<T> result;
+    for (double x = xstart; x <= xend; x += delta) {
+      result.addPoint(point{x, equation(x)});
+    }
+    return result;
+  }
+
+  static curve<T> line_between(T x1, T y1, T x2, T y2, T delta = 0.01) {
+    T slope = (y2 - y1) / (x2 - x1);
+    curve<T> result;
+    if (isinf(slope)) {
+      if (y2 < y1) {
+        for (T start = y1; start > y2; start -= delta) {
+          result.addPoint(point<T>{x1, start});
+        }
+      } else {
+        for (T start = y1; start < y2; start += delta) {
+          result.addPoint(point<T>{x1, start});
+        }
+      }
+      result.addPoint(point<T>{x2, y2});
+    } else {
+      auto equation = [&](T x) { return slope * x - slope * x1 + y1; };
+      for (T start = x1; start < x2; start += delta) {
+        T y = equation(start);
+        result.addPoint(point{start, y});
+      }
+    }
+    return result;
+  }
 
   [[nodiscard]] std::vector<point<T>> const &points() const noexcept {
     return points_;
@@ -63,58 +74,6 @@ template <std::floating_point T = double> struct curve {
     result.addPoint(points_.back());
 
     return result;
-  }
-
-  void ttydraw() const {
-    char *ctermheight = getenv("LINES");
-    if (ctermheight == nullptr || *ctermheight == 0) {
-      std::cerr << "Cannot get LINES" << std::endl;
-      return;
-    }
-
-    char *ctermwidth = getenv("COLUMNS");
-    if (ctermwidth == nullptr || *ctermwidth == 0) {
-      std::cerr << "Cannot get columns" << std::endl;
-      return;
-    }
-
-    int termheight = atoi(ctermheight);
-    int termwidth = atoi(ctermwidth);
-
-    std::vector<std::vector<char>> screen{};
-    for (int i = 0; i < termheight; i++) {
-      screen.emplace_back(std::vector<char>{});
-      for (int j = 0; j < termwidth; j++) {
-        screen.back().push_back('-');
-      }
-    }
-
-    auto [ipminx, ipmaxx] = std::minmax_element(
-        points_.begin(), points_.end(),
-        [](point<T> const &a, point<T> const &b) { return a.x < b.x; });
-
-    auto [ipminy, ipmaxy] = std::minmax_element(
-        points_.begin(), points_.end(),
-        [](point<T> const &a, point<T> const &b) { return a.y < b.y; });
-
-    T minx = ipminx->x;
-    T miny = ipminy->y;
-    T maxx = ipmaxx->x;
-    T maxy = ipmaxy->y;
-
-    for (int i = 0; i < points_.size(); i++) {
-      auto const &p = points_[i];
-      T xchar = map(p.x, minx, maxx, 0.0, termwidth - 1.0);
-      T ychar = map(p.y, miny, maxy, 0.0, termheight - 1.0);
-      screen[termheight - ((int)ychar) - 1][(int)xchar] = 'X';
-    }
-
-    for (int i = 0; i < screen.size(); i++) {
-      for (int j = 0; j < screen[i].size(); j++) {
-        std::cout << screen[i][j];
-      }
-      std::cout << '\n';
-    }
   }
 
 private:

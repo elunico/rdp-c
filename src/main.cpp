@@ -1,4 +1,5 @@
 #include "curve.hpp"
+#include "curve_print.hpp"
 #include "point.hpp"
 #include <cassert>
 #include <cmath>
@@ -38,12 +39,9 @@ int main(int argc, char const *argv[]) {
 
   curve c;
 
-  double d = 0;
-
-  while (d < 5) {
-    c.addPoint(point{d, exp(-d) * cos(2 * M_PI * d)});
-    // c.addPoint(point{d, exp(-d * cos(2 * M_PI * d))});
-    d += 0.01;
+  for (double x = 0; x < 5; x += 0.01) {
+    c.addPoint(point{x, exp(-x) * cos(2 * M_PI * x)});
+    // c.addPoint(point{x, exp(-x * cos(2 * M_PI * x))});
   }
 
   std::cout << "Beginning " << c.points().front() << " and "
@@ -59,13 +57,18 @@ int main(int argc, char const *argv[]) {
   std::cout << "After RDP " << r.points().front() << " and "
             << r.points().back() << std::endl;
 
-  auto p = point<>::fromangle(radians(45));
+  curve_print printer(true, true, false, true);
+  // printer.print(c);
+  // printer.print(r);
 
-  std::cout << "Point p is at " << p << " with heading " << degrees(p.heading())
-            << std::endl;
+  // curve t = curve<double>::line_between(4, 4, 8, -4);
+  // printer.print(t);
 
-  c.ttydraw();
-  r.ttydraw();
+  curve q = curve<double>::quadratic(-2, -6, -3, -250, 250);
+  auto ff = q.rdp(0.1);
+  printer.print(ff);
+  std::cout << q.points().size() << '\n';
+  std::cout << ff.points().size() << '\n';
 
   return 0;
 }
