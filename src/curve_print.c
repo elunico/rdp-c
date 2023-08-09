@@ -39,7 +39,10 @@ bool get_curve_extrema(curve const *c, struct curve_extrema *result) {
 
   point *points = c->points;
 
-  double xmin, xmax, ymin, ymax;
+  double xmin = c->points[0].x;
+  double xmax = c->points[0].x;
+  double ymin = c->points[0].y;
+  double ymax = c->points[0].y;
   for (int i = 1; i < c->length; i++) {
     if (c->points[i].x > xmax)
       xmax = c->points[i].x;

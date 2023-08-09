@@ -25,9 +25,12 @@ int main(int argc, char const *argv[]) {
   int index = 0;
   double start = -5;
   double end = 5;
-  for (double d = -start; d < end; d += ((end - start) / pcount)) {
+  double delta = ((end - start) / pcount);
+  printf("delta: %f\n", delta);
+  for (double d = start; d < end; d += delta) {
     c.points[index].x = d;
-    c.points[index].y = exp(-d) * cos(2 * M_PI * d);
+    // c.points[index].y = exp(-d) * cos(2 * M_PI * d);
+    c.points[index].y = tan(d / 3.25);
     c.length++;
     index++;
   }
@@ -41,14 +44,6 @@ int main(int argc, char const *argv[]) {
   print(&c, NULL);
 
   rdp_result_free(&r);
-
-  curve *q = curve_from_quadratic(5, 6, 5, -4, 4, 0.01);
-  struct curve_print_properties props;
-  props.start_x_0 = true;
-  props.start_y_0 = true;
-  props.symmetricX = true;
-  props.symmetricY = true;
-  print(q, &props);
 
   free(c.points);
   return 0;
