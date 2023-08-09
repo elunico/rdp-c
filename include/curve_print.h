@@ -15,6 +15,6 @@ double map(double n, double start1, double stop1, double start2, double stop2);
 void get_term_size(int *h, int *w);
 bool get_curve_extrema(curve const *c, struct curve_extrema *result);
 void fix_bounds(double *min, double *max, bool sym, bool start0);
-void print(curve const *c, struct curve_print_properties *props);
+void curve_print(curve const *c, struct curve_print_properties *props);
 
 #endif

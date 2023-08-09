@@ -118,7 +118,7 @@ static void free_screen(struct screen s) {
   free(s.data);
 }
 
-void print(curve const *c, struct curve_print_properties *prop) {
+void curve_print(curve const *c, struct curve_print_properties *prop) {
   bool x0 = false, y0 = false, xsym = false, ysym = false;
   if (prop != NULL) {
     x0 = prop->start_x_0;

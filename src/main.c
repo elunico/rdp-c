@@ -25,7 +25,7 @@ int main(int argc, char const *argv[]) {
 
   printf("epsilon=%f. result has %d points\n", epsilon, r.length);
 
-  print(c, NULL);
+  curve_print(c, NULL);
 
   rdp_result_free(&r);
 
