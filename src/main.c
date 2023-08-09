@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+double tanFunc(double x) { return tan(x / 3.25); }
+
 int main(int argc, char const *argv[]) {
   double epsilon = 0.075;
   if (argc == 2) {
@@ -15,36 +17,19 @@ int main(int argc, char const *argv[]) {
     epsilon = atof(argv[1]);
   }
 
-  curve c;
+  curve *c = curve_construct(-5, 5, 0.01, tanFunc);
 
-  const int pcount = 1000;
+  printf("start has length of %d\n", c->length);
 
-  c.points = malloc(sizeof(point) * (pcount + 1));
-  c.length = 0;
-
-  int index = 0;
-  double start = -5;
-  double end = 5;
-  double delta = ((end - start) / pcount);
-  printf("delta: %f\n", delta);
-  for (double d = start; d < end; d += delta) {
-    c.points[index].x = d;
-    // c.points[index].y = exp(-d) * cos(2 * M_PI * d);
-    c.points[index].y = tan(d / 3.25);
-    c.length++;
-    index++;
-  }
-
-  printf("start has length of %d\n", c.length);
-
-  curve r = rdp(&c, epsilon);
+  curve r = rdp(c, epsilon);
 
   printf("epsilon=%f. result has %d points\n", epsilon, r.length);
 
-  print(&c, NULL);
+  print(c, NULL);
 
   rdp_result_free(&r);
 
-  free(c.points);
+  curve_construct_free(c);
+  // free(c.points);
   return 0;
 }

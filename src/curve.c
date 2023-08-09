@@ -87,18 +87,29 @@ static double quadratic(double a, double b, double c, double x) {
   return a * pow(x, 2) + b * c + c;
 }
 
+static int count_between(double start, double end, double delta) {
+  double c = fabs(end - start) / delta;
+  int q = (int)c;
+  double difference = c - q;
+  printf("c is %d difference is %f and q is %d\n", (int)c, difference, q);
+  return ((int)c + 1) + (fabs(difference) != 0);
+}
+
 curve *curve_from_quadratic(double a, double b, double c, double xstart,
                             double xend, double delta) {
   curve *result = malloc(sizeof(*result));
-  int count = ((int)((xend - xstart) / delta)) + 1;
+  int count = count_between(xstart, xend, delta) + 1;
   printf("count is %d\n", count);
   result->points = malloc(sizeof(point) * count);
   result->length = count;
   int index = 0;
-  for (double x = xstart; x <= xend; x += delta) {
+  for (double x = xstart; x < xend; x += delta) {
     result->points[index].x = x;
     result->points[index++].y = quadratic(a, b, c, x);
   }
+  result->points[result->length - 1].x = xend;
+  result->points[result->length - 1].y = quadratic(a, b, c, xend);
+  result->length++;
   return result;
 }
 
@@ -110,7 +121,8 @@ curve *curve_from_line(double x1, double y1, double x2, double y2,
                        double delta) {
   double slope = (y2 - y1) / (x2 - x1);
   curve *result = malloc(sizeof(*result));
-  int count = (int)((fabs(y1 - y2) / delta) + 1);
+  // int count = (int)((fabs(y1 - y2) / delta) + 1);
+  int count = count_between(y2, y1, delta) + 1;
   result->points = malloc(sizeof(point) * count);
   result->length = count;
   int index = 0;
@@ -120,11 +132,17 @@ curve *curve_from_line(double x1, double y1, double x2, double y2,
         result->points[index].x = x1;
         result->points[index++].y = start;
       }
+      result->points[result->length - 1].x = x2;
+      result->points[result->length - 1].y = linear_eq(x1, y1, slope, x2);
+      result->length++;
     } else {
-      for (double start = y1; start <= y2; start += delta) {
+      for (double start = y1; start < y2; start += delta) {
         result->points[index].x = x1;
         result->points[index++].y = start;
       }
+      result->points[result->length - 1].x = x2;
+      result->points[result->length - 1].y = linear_eq(x1, y1, slope, x2);
+      result->length++;
     }
   } else {
     for (double start = x1; start < x2; start += delta) {
@@ -132,6 +150,37 @@ curve *curve_from_line(double x1, double y1, double x2, double y2,
       result->points[index].x = start;
       result->points[index++].y = y;
     }
+    result->points[result->length - 1].x = x2;
+    result->points[result->length - 1].y = linear_eq(x1, y1, slope, x2);
+    result->length++;
   }
   return result;
+}
+
+curve *curve_construct(double startX, double endX, double delta,
+                       double (*f)(double)) {
+  curve *result = malloc(sizeof(*result));
+  result->length = 0;
+  // int count = (int)((fabs(endX - startX) / delta) + 1);
+  int count = count_between(startX, endX, delta) + 1;
+  result->points = malloc(sizeof(point) * count);
+  int index = 0;
+  while (startX < endX) {
+    result->points[index].x = startX;
+    result->points[index++].y = f(startX);
+    startX += delta;
+    result->length++;
+  }
+  fprintf(stderr, "result length is %d and count is %d\n", result->length,
+          count);
+  // assert((result->length == (count - 1)) || (result->length == (count - 2)));
+  result->points[result->length - 1].x = endX;
+  result->points[result->length - 1].y = f(endX);
+  result->length++;
+  return result;
+}
+
+void curve_construct_free(curve *c) {
+  free(c->points);
+  free(c);
 }

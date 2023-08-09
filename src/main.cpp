@@ -37,12 +37,11 @@ int main(int argc, char const *argv[]) {
     epsilon = atof(argv[1]);
   }
 
-  curve c;
+  auto tanFunc = [](auto x) { return tan(0.25 * x); };
+  auto originalFunc = [](auto x) { return exp(-x) * cos(2 * M_PI * x); };
+  auto myFirstFunc = [](auto x) { return exp(-x * cos(2 * M_PI * x)); };
 
-  for (double x = -5; x < 5; x += 0.01) {
-    c.addPoint(point{x, exp(-x) * cos(2 * M_PI * x)});
-    // c.addPoint(point{x, exp(-x * cos(2 * M_PI * x))});
-  }
+  curve c = curve<>::construct(-5.0, 5.0, 0.01, tanFunc);
 
   std::cout << "Beginning " << c.points().front() << " and "
             << c.points().back() << std::endl;

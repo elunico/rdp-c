@@ -8,6 +8,16 @@
 
 template <std::floating_point T = double> struct curve {
 
+  static curve<T> construct(T startX, T endX, T delta, auto f) {
+    curve<T> result;
+    while (startX < endX) {
+      result.addPoint(startX, f(startX));
+      startX += delta;
+    }
+    result.addPoint(endX, f(endX));
+    return result;
+  }
+
   static curve<T> quadratic(T a, T b, T c, T xstart, T xend, T delta = 0.01) {
     auto equation = [&](T x) { return a * std::pow(x, 2) + b * x + c; };
     curve<T> result;
@@ -48,6 +58,8 @@ template <std::floating_point T = double> struct curve {
   [[nodiscard]] auto length() const noexcept { return points_.size(); }
 
   void addPoint(point<T> const &p) { points_.push_back(p); }
+
+  void addPoint(T x, T y) { points_.emplace_back(x, y); }
 
   [[nodiscard]] auto furthestPoint(int start, int end) const {
 
