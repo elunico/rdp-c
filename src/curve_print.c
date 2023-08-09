@@ -120,4 +120,9 @@ void print(curve const *c, struct curve_print_properties *prop) {
     // out << '\n';
     putchar('\n');
   }
+
+  for (int i = 0; i < theight; i++) {
+    free(screen[i]);
+  }
+  free(screen);
 }
