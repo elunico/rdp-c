@@ -1,12 +1,13 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
+#include "legacysupport.hpp"
 #include <cmath>
 #include <tuple>
 #include <type_traits>
 #include <vector>
 
-template <std::floating_point T = double> struct point {
+template <FLOATING_POINT_CONCEPT T = double> struct point {
   T x, y;
 
   point(T x, T y) noexcept : x(x), y(y) {}

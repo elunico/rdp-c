@@ -2,6 +2,7 @@
 #define CURVE_PRINT_HPP
 
 #include "curve.hpp"
+#include "legacysupport.hpp"
 #include "point.hpp"
 #include <algorithm>
 #include <cmath>
@@ -11,14 +12,14 @@
 #include <vector>
 
 // adapted from processing/p5.js
-template <std::floating_point T = double>
+template <FLOATING_POINT_CONCEPT T = double>
 T map(T n, T start1, T stop1, T start2, T stop2) {
   auto delta = stop1 - start1 == 0 ? 1 : stop1 - start1;
   T newval = (n - start1) / (delta) * (stop2 - start2) + start2;
   return newval;
 }
 
-template <std::floating_point T> struct extrema {
+template <FLOATING_POINT_CONCEPT T> struct extrema {
   T minx;
   T miny;
   T maxx;
@@ -34,7 +35,7 @@ class curve_print {
   int twidth;
   int theight;
 
-  template <std::floating_point T>
+  template <FLOATING_POINT_CONCEPT T>
   std::optional<extrema<T>> get_curve_extrema(curve<T> const &c) const {
     if (c.points().size() == 0) {
       return std::nullopt;
@@ -53,7 +54,7 @@ class curve_print {
         extrema<T>{ipminx->x, ipminy->y, ipmaxx->x, ipmaxy->y}};
   }
 
-  template <std::floating_point T>
+  template <FLOATING_POINT_CONCEPT T>
   std::pair<T, T> fix_bounds(T min, T max, bool sym, bool start0) const {
     if (start0 && min > 0)
       min = 0;
@@ -85,7 +86,7 @@ public:
 
   curve_print(curve_print &&) = default;
 
-  template <std::floating_point T> void print(curve<T> const &c) const {
+  template <FLOATING_POINT_CONCEPT T> void print(curve<T> const &c) const {
     std::vector<std::vector<char>> screen{};
     for (int i = 0; i < theight; i++) {
       screen.emplace_back();

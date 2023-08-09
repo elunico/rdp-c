@@ -1,5 +1,6 @@
 #include "curve.hpp"
 #include "curve_print.hpp"
+#include "legacysupport.hpp"
 #include "point.hpp"
 #include <cassert>
 #include <cmath>
@@ -12,13 +13,13 @@ double radians(double deg) { return deg * (M_PI / 180); }
 
 double degrees(double rad) { return rad * (180 / M_PI); }
 
-template <std::floating_point T>
+template <FLOATING_POINT_CONCEPT T>
 std::ostream &operator<<(std::ostream &right, point<T> const &left) {
   right << "(" << left.x << ", " << left.y << ")";
   return right;
 }
 
-template <std::floating_point T>
+template <FLOATING_POINT_CONCEPT T>
 std::ostream &operator<<(std::ostream &os, curve<T> const &left) {
   os << "curve{";
   for (const auto &p : left.points()) {

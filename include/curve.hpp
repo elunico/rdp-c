@@ -1,12 +1,13 @@
 #ifndef CURVE_HPP
 #define CURVE_HPP
 
+#include "legacysupport.hpp"
 #include "point.hpp"
 #include <tuple>
 #include <type_traits>
 #include <vector>
 
-template <std::floating_point T = double> struct curve {
+template <FLOATING_POINT_CONCEPT T = double> struct curve {
 
   static curve<T> construct(T startX, T endX, T delta, auto f) {
     curve<T> result;
