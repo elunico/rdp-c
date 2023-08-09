@@ -2,8 +2,13 @@
 #define CURVE_PRINT_HPP
 
 #include "curve.hpp"
+#include "point.hpp"
+#include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <optional>
 #include <type_traits>
+#include <vector>
 
 // adapted from processing/p5.js
 template <std::floating_point T = double>

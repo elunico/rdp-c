@@ -1,5 +1,10 @@
 
 #include "curve_print.h"
+#include "point.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // adapted from processing/p5.js
 double map(double n, double start1, double stop1, double start2, double stop2) {
@@ -76,6 +81,43 @@ void fix_bounds(double *min, double *max, bool sym, bool start0) {
   }
 }
 
+struct screen {
+  int height, width;
+  char **data;
+};
+
+static struct screen make_screen(int theight, int twidth) {
+  char **data = malloc(sizeof(char *) * theight);
+
+  if (data == NULL) {
+    fprintf(stderr, "Out of memory!");
+    abort();
+  }
+
+  for (int i = 0; i < theight; i++) {
+    data[i] = malloc(sizeof(char) * twidth);
+    if (data[i] == NULL) {
+      fprintf(stderr, "Out of memory!");
+      free(data);
+      abort();
+    }
+    memset(data[i], '-', twidth);
+  }
+
+  struct screen s;
+  s.data = data;
+  s.height = theight;
+  s.width = twidth;
+  return s;
+}
+
+static void free_screen(struct screen s) {
+  for (int i = 0; i < s.height; i++) {
+    free(s.data[i]);
+  }
+  free(s.data);
+}
+
 void print(curve const *c, struct curve_print_properties *prop) {
   bool x0 = false, y0 = false, xsym = false, ysym = false;
   if (prop != NULL) {
@@ -84,45 +126,34 @@ void print(curve const *c, struct curve_print_properties *prop) {
     xsym = prop->symmetricX;
     ysym = prop->symmetricY;
   }
-  int theight, twidth;
-  get_term_size(&theight, &twidth);
-
-  char **screen = malloc(sizeof(char *) * theight);
-  for (int i = 0; i < theight; i++) {
-    screen[i] = malloc(sizeof(char) * twidth);
-    memset(screen[i], '-', twidth);
-  }
-
-  point *points_ = c->points;
 
   struct curve_extrema e;
-
   if (!get_curve_extrema(c, &e)) {
     fprintf(stderr, "No points in curve\n");
     return;
   }
 
-  fix_bounds(&e.xmin, &e.xmax, xsym, x0); // symmetricX, start_x_0_);
-  fix_bounds(&e.ymin, &e.ymax, ysym, y0); // symmetricY, start_y_0_);
+  fix_bounds(&e.xmin, &e.xmax, xsym, x0);
+  fix_bounds(&e.ymin, &e.ymax, ysym, y0);
+
+  int theight, twidth;
+  get_term_size(&theight, &twidth);
+
+  struct screen s = make_screen(theight, twidth);
 
   for (int i = 0; i < c->length; i++) {
     point const *p = &c->points[i];
     int xchar = (int)map(p->x, e.xmin, e.xmax, 0.0, twidth - 1.0);
     int ychar = (int)map(p->y, e.ymin, e.ymax, 0.0, theight - 1.0);
-    screen[theight - ((int)ychar) - 1][(int)xchar] = 'X';
+    s.data[theight - ((int)ychar) - 1][(int)xchar] = 'X';
   }
 
   for (int i = 0; i < theight; i++) {
     for (int j = 0; j < twidth; j++) {
-      // out << screen[i][j];
-      putchar(screen[i][j]);
+      putchar(s.data[i][j]);
     }
-    // out << '\n';
     putchar('\n');
   }
 
-  for (int i = 0; i < theight; i++) {
-    free(screen[i]);
-  }
-  free(screen);
+  free_screen(s);
 }

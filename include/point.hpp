@@ -1,6 +1,7 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
+#include <cmath>
 #include <tuple>
 #include <type_traits>
 #include <vector>

@@ -2,11 +2,7 @@
 #define CURVE_PRINT_H
 
 #include "curve.h"
-#include "point.h"
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 struct curve_print_properties {
   bool start_x_0, start_y_0, symmetricX, symmetricY;
