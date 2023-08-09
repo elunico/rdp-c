@@ -2,6 +2,7 @@
 #define POINT_HPP
 
 #include "legacysupport.hpp"
+#include <cassert>
 #include <cmath>
 #include <tuple>
 #include <type_traits>
