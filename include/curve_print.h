@@ -51,6 +51,7 @@ bool get_term_size(int *h, int *w);
  * Note that the smallest x and y may come from two distinct points.
  * This function finds the smallest and largest of each coordinate
  * *NOT* the coordinate with the smallest/largest x and y.
+ * Do not pass NULL to any arguments
  *
  * returns: true on success and false if the curve has no points
  */
@@ -60,6 +61,7 @@ bool get_curve_extrema(curve const *c, struct curve_extrema *result);
  * changes the values points to my _min_ and _max_ depending on whether
  * the values of min and max should be symmetric and whether the range
  * should start at 0. Note that if *min < 0, start0 is ignored.
+ * Do not pass NULL to any arguments
  */
 void fix_bounds(double *min, double *max, bool sym, bool start0);
 

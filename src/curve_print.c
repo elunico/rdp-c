@@ -47,10 +47,13 @@ bool get_term_size(int *h, int *w) {
 }
 
 bool get_curve_extrema(curve const *c, struct curve_extrema *result) {
-  if (result == NULL) {
-    fprintf(stderr, "Do not pass null to get_curve_extrema\n");
+
+#ifdef DEBUG
+  if (c == NULL || result == NULL) {
+    fprintf(stderr, "Do not pass null to get_curve_extrema()\n");
     abort();
   }
+#endif
 
   if (c->length == 0)
     return false;
@@ -83,6 +86,12 @@ bool get_curve_extrema(curve const *c, struct curve_extrema *result) {
 }
 
 void fix_bounds(double *min, double *max, bool sym, bool start0) {
+#ifdef DEBUG
+  if (min == NULL || max == NULL) {
+    fprintf(stderr, "Do not pass null to fix_bounds()\n");
+    abort();
+  }
+#endif
   if (start0 && *min > 0)
     *min = 0;
 
@@ -132,6 +141,13 @@ static void free_screen(struct screen s) {
 }
 
 void curve_print(curve const *c, struct curve_print_properties *prop) {
+#ifdef DEBUG
+  if (c == NULL) {
+    fprintf(stderr, "Do not pass null to curve_print()\n");
+    abort();
+  }
+#endif
+
   bool x0 = false, y0 = false, xsym = false, ysym = false;
   if (prop != NULL) {
     x0 = prop->start_x_0;

@@ -51,6 +51,13 @@ static void rdp_support(curve const *original, double epsilon, int sidx,
 
 curve *rdp(curve const *start, double epsilon) {
 
+#ifdef DEBUG
+  if (start == NULL) {
+    fprintf(stderr, "Do not pass null to rdp()\n");
+    abort();
+  }
+#endif
+
   int *included = calloc(start->length, sizeof(int));
   included[0] = 1;
   included[start->length - 1] = 1;
