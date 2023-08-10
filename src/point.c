@@ -22,6 +22,13 @@ point fromangleandmag(double rads, double mag) {
   return mult(&p, mag);
 }
 
+point copy(point const *p) {
+  point res;
+  res.x = p->x;
+  res.y = p->y;
+  return res;
+}
+
 double dist(point const *a, point const *b) {
   double dx = a->x - b->x;
   double dy = a->y - b->y;

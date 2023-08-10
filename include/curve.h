@@ -23,18 +23,27 @@ curve *rdp(curve const *start, double epsilon);
 
 /**
  * Caller must free return value using curve_linear_free
+ * Implementation note: delta is treated as a maximum.
+ * points may be closer together than delta but will not
+ * be further apart than delta
  */
 curve *curve_from_line(double x1, double y1, double x2, double y2,
                        double delta);
 
 /**
  * Caller must free return value using curve_quadratic_free
+ * Implementation note: delta is treated as a maximum.
+ * points may be closer together than delta but will not
+ * be further apart than delta
  */
 curve *curve_from_quadratic(double a, double b, double c, double xstart,
                             double xend, double delta);
 
 /**
  * Caller must free return value using curve_construct_free
+ * Implementation note: delta is treated as a maximum.
+ * points may be closer together than delta but will not
+ * be further apart than delta
  */
 curve *curve_construct(double startX, double endX, double delta,
                        double (*f)(double));
