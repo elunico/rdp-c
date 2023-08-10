@@ -166,7 +166,9 @@ void curve_print(curve const *c, struct curve_print_properties *prop) {
   fix_bounds(&e.ymin, &e.ymax, ysym, y0);
 
   int theight, twidth;
-  get_term_size(&theight, &twidth);
+  if (!get_term_size(&theight, &twidth)) {
+    return;
+  }
 
   struct screen s = make_screen(theight, twidth);
 
