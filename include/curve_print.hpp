@@ -86,6 +86,7 @@ public:
 
   curve_print(curve_print &&) = default;
 
+
   template <FLOATING_POINT_CONCEPT T> void print(curve<T> const &c) const {
     std::vector<std::vector<char>> screen{};
     for (int i = 0; i < theight; i++) {

@@ -9,24 +9,37 @@ typedef struct {
   point *points;
 } curve;
 
+/**
+ * Returns the index into the points of _inCurve_ where the furthest point is
+ * and sets the value pointed to by _distance_ to that furthest distance.
+ * Warning: _distance_ cannot be NULL
+ */
 int furthestPoint(curve const *inCurve, int start, int end, double *distance);
 
-void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
-                 int *included, int *totalPoints);
+/**
+ * Caller must free return value using rdp_result_free
+ */
+curve *rdp(curve const *start, double epsilon);
 
-curve rdp(curve const *start, double epsilon);
-
-void rdp_result_free(curve *c);
-
+/**
+ * Caller must free return value using curve_linear_free
+ */
 curve *curve_from_line(double x1, double y1, double x2, double y2,
                        double delta);
 
+/**
+ * Caller must free return value using curve_quadratic_free
+ */
 curve *curve_from_quadratic(double a, double b, double c, double xstart,
                             double xend, double delta);
 
+/**
+ * Caller must free return value using curve_construct_free
+ */
 curve *curve_construct(double startX, double endX, double delta,
                        double (*f)(double));
 
+void rdp_result_free(curve *c);
 void curve_construct_free(curve *c);
 void curve_quadratic_free(curve *c);
 void curve_linear_free(curve *c);

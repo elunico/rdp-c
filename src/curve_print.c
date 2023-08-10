@@ -13,24 +13,37 @@ double map(double n, double start1, double stop1, double start2, double stop2) {
   return newval;
 }
 
-void get_term_size(int *h, int *w) {
+bool get_term_size(int *h, int *w) {
+  if (h == NULL || w == NULL)
+    return false;
+
   char *ctermheight = getenv("LINES");
   if (ctermheight == NULL || *ctermheight == 0) {
     fprintf(stderr, "environment does not contain LINES\n");
-    abort();
+    return false;
   }
 
   char *ctermwidth = getenv("COLUMNS");
   if (ctermwidth == NULL || *ctermwidth == 0) {
     fprintf(stderr, "environment does not contain COLUMNS\n");
-    abort();
+    return false;
   }
 
-  int termheight = (int)(strtol(ctermheight, NULL, 10));
-  int termwidth = (int)(strtol(ctermwidth, NULL, 10));
+  char *end;
+
+  int termheight = (int)(strtol(ctermheight, &end, 10));
+
+  if (end == ctermheight)
+    return false;
+
+  int termwidth = (int)(strtol(ctermwidth, &end, 10));
+
+  if (end == ctermheight)
+    return false;
 
   *h = termheight;
   *w = termwidth;
+  return true;
 }
 
 bool get_curve_extrema(curve const *c, struct curve_extrema *result) {

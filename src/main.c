@@ -21,9 +21,9 @@ int main(int argc, char const *argv[]) {
 
   printf("start has length of %d\n", c->length);
 
-  curve r = rdp(c, epsilon);
+  curve *r = rdp(c, epsilon);
 
-  printf("epsilon=%f. result has %d points\n", epsilon, r.length);
+  printf("epsilon=%f. result has %d points\n", epsilon, r->length);
 
   curve_print(c, NULL);
 

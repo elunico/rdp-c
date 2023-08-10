@@ -5,6 +5,14 @@
 
 int furthestPoint(curve const *inCurve, int start, int end, double *distance) {
 
+#ifdef DEBUG
+  if (distance == NULL) {
+    fprintf(stderr, "furthestPoint(curve const*, int, int, double* distance) "
+                    "distance cannot be null\n");
+    abort();
+  }
+#endif
+
   int furthestIndex = -1;
   double recordDist = 0;
 
@@ -21,8 +29,8 @@ int furthestPoint(curve const *inCurve, int start, int end, double *distance) {
   return furthestIndex;
 }
 
-void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
-                 int *included, int *totalPoints) {
+static void rdp_support(curve const *original, double epsilon, int sidx,
+                        int eidx, int *included, int *totalPoints) {
 
   if (sidx >= eidx)
     return;
@@ -41,7 +49,7 @@ void rdp_support(curve const *original, double epsilon, int sidx, int eidx,
   }
 }
 
-curve rdp(curve const *start, double epsilon) {
+curve *rdp(curve const *start, double epsilon) {
 
   int *included = calloc(start->length, sizeof(int));
   included[0] = 1;
@@ -65,14 +73,17 @@ curve rdp(curve const *start, double epsilon) {
 
   free(included);
 
-  curve v;
-  v.points = result;
-  v.length = totalPoints;
+  curve *v = malloc(sizeof(*v));
+  v->points = result;
+  v->length = totalPoints;
 
   return v;
 }
 
-void rdp_result_free(curve *c) { free(c->points); }
+void rdp_result_free(curve *c) {
+  free(c->points);
+  free(c);
+}
 
 void curve_quadratic_free(curve *c) {
   free(c->points);
