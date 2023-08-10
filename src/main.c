@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]) {
 
   curve_print(c, NULL);
 
-  rdp_result_free(&r);
+  rdp_result_free(r);
 
   curve_construct_free(c);
   // free(c.points);
